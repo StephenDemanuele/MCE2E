@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE2E.Cli", "MCE2E.Cli\MCE2E.Cli.csproj", "{AF372206-982F-4F9F-8AF6-3382D9D855FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE2E.Controller", "MCE2E.Controller\MCE2E.Controller.csproj", "{8D980425-A537-47FE-BDFB-FA535AE0000B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE2E.Contracts", "MCE2E.Contracts\MCE2E.Contracts.csproj", "{FAF2266E-7284-41CB-B6B7-0B68A0C79021}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5D55A17E-8C1F-490B-8D64-A3CBCAE0E839}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Users\sdema\Desktop\sandbox\privatekey.xml = ..\..\Users\sdema\Desktop\sandbox\privatekey.xml
+		..\..\Users\sdema\Desktop\sandbox\publickey.xml = ..\..\Users\sdema\Desktop\sandbox\publickey.xml
+		README.txt = README.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE2E.DefaultEncryption", "MCE2E.DefaultEncryption\MCE2E.DefaultEncryption.csproj", "{BAB9194F-6C95-475A-8860-DEB714BAB771}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF372206-982F-4F9F-8AF6-3382D9D855FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF372206-982F-4F9F-8AF6-3382D9D855FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF372206-982F-4F9F-8AF6-3382D9D855FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF372206-982F-4F9F-8AF6-3382D9D855FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D980425-A537-47FE-BDFB-FA535AE0000B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D980425-A537-47FE-BDFB-FA535AE0000B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D980425-A537-47FE-BDFB-FA535AE0000B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D980425-A537-47FE-BDFB-FA535AE0000B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAF2266E-7284-41CB-B6B7-0B68A0C79021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAF2266E-7284-41CB-B6B7-0B68A0C79021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAF2266E-7284-41CB-B6B7-0B68A0C79021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAF2266E-7284-41CB-B6B7-0B68A0C79021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAB9194F-6C95-475A-8860-DEB714BAB771}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAB9194F-6C95-475A-8860-DEB714BAB771}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAB9194F-6C95-475A-8860-DEB714BAB771}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAB9194F-6C95-475A-8860-DEB714BAB771}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72716E59-3A71-4E6D-B834-5A6DAA9B85F9}
+	EndGlobalSection
+EndGlobal
