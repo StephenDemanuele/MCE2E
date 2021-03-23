@@ -43,8 +43,7 @@ namespace MCE2E.UnitTests
 			encryptionService.EncryptAsync(fileToEncrypt, targetDirectory).Wait();
 
 			var decryptionService = _serviceProvider.GetService<IDecryptionService>();
-			var decryptedFiles= decryptionService.Decrypt(targetDirectory, privateKeyFile);
-
+			var decryptedFiles = decryptionService.Decrypt(targetDirectory, privateKeyFile);
 		}
 	}
 }
