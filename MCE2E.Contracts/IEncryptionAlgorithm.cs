@@ -6,8 +6,6 @@ namespace MCE2E.Contracts
 	{
 		byte[] EncryptSymmetricKey(byte[] key, string pathToPublicKey);
 
-		byte[] DecryptSymmetricKey(byte[] encryptedKey, FileInfo privateKeyFile);
-
-		FileInfo Encrypt(byte[] key, FileInfo fileToEncrypt);
+		FileInfo Encrypt(byte[] key, FileInfo fileToEncrypt, DirectoryInfo targetDirectory);
 	}
 }

@@ -1,50 +1,65 @@
 ﻿using System.IO;
+using System.Linq;
 using GoCommando;
-using MCE2E.Controller.Services;
+using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MCE2E.Cli.Commands
 {
-    [Description("Encrypt files in a specified directory")]
-    [Command("encrypt", "crypto")]
-    public class EncryptCommand : BaseCommand
-    {
-        [Parameter("targetdir")]
-        [Description("The directory containing the files to encrypt.")]
-        public override string TargetDirectory { get; set; }
+	[Description("Encrypt files in a specified directory")]
+	[Command("encrypt", "crypto")]
+	public class EncryptCommand : BaseCommand
+	{
+		[Parameter("targetdir")]
+		[Description("The directory where encrypted files will go.")]
+		public string TargetDirectory { get; set; }
 
-        [Parameter("ext")]
-        [Description("The extension of files to encrypt.")]
-        public string TargetFileExtension { get ;set;}
+		[Parameter("sourcedir", "sd")]
+		[Description("The directory where original files are.")]
+		public string SourceDirectory { get; set; }
 
-        public override void Run()
-        {
-            if (!ValidateArguments())
-            {
-                return;
-            }
+		[Parameter("ext")]
+		[Description("The extension of files to encrypt.")]
+		public string TargetFileExtension { get ;set;}
 
-            var _encryptionService = new DefaultEncryptionService();
-            try
-            {
-                _encryptionService.Initialize(PluginDirectory);
-                var targetDir = new DirectoryInfo(TargetDirectory);
-                var targetFiles = targetDir.GetFiles(TargetFileExtension);
-                Log($"Found {targetFiles.Length} to encrypt.");
+		public override void Run()
+		{
+			Initialize();
 
-                foreach(var file in targetFiles)
-                {
-                    Log($"Encrypting {file.Name}");
-                    var encryptedDirectory = _encryptionService.Encrypt(file);
-                    Log($"Encrypted file added to {encryptedDirectory.FullName}");
-                }
+			var encryptionService = ServiceProvider.GetService<IEncryptionService>();
+			try
+			{
+				var sourceDir = new DirectoryInfo(SourceDirectory);
+				if (!sourceDir.Exists)
+				{
+					Log($"Source dir {SourceDirectory} does not exist", LogLevel.Error);
+					return;
+				}
 
-            }
-            catch (EncryptionServiceBootstrappingException encryptionServiceBootstrappingException)
-            {
-                Log("Error bootstrapping", isError: true);
-                Log(encryptionServiceBootstrappingException.InnerException.Message, true);
-            }
-        }
-    }
+				var targetFiles = sourceDir.GetFiles(TargetFileExtension);
+				if (!targetFiles.Any())
+				{
+					Log("No files found", LogLevel.Warn);
+					return;
+				}
+
+				Log($"Found {targetFiles.Length} to encrypt.", LogLevel.Info);
+
+				foreach(var file in targetFiles)
+				{
+					Log($"Encrypting {file.Name}", LogLevel.Info);
+					// ReSharper disable once PossibleNullReferenceException
+					encryptionService.EncryptAsync(file, new DirectoryInfo(TargetDirectory)).Wait();
+					Log("Ready", LogLevel.Info);
+				}
+
+			}
+			catch (EncryptionServiceBootstrappingException encryptionServiceBootstrappingException)
+			{
+				Log("Error bootstrapping", LogLevel.Error);
+				Log(encryptionServiceBootstrappingException.InnerException.Message, LogLevel.Error);
+			}
+		}
+	}
 }

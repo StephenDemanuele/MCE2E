@@ -1,11 +1,10 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace MCE2E.Controller.Contracts
 {
-    internal interface IEncryptionService
+    public interface IEncryptionService
     {
-        void Initialize(string pluginDirectory);
-
-        DirectoryInfo Encrypt(FileInfo filepublicKeyFile);
+        Task EncryptAsync(FileInfo publicKeyFile, DirectoryInfo targetDirectoryInfo);
     }
 }

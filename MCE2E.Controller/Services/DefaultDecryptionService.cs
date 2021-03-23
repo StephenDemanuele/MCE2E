@@ -2,83 +2,83 @@
 using MCE2E.Contracts;
 using System.Collections.Generic;
 using MCE2E.Controller.Contracts;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCE2E.Controller.Services
 {
-    /// <summary>
-    /// This service is consumed by the test application to verify encryption is working correctly.
-    /// This means the dependency DefaultEncryptionService <--> IEncryptionService has to be registered
-    /// with the host's DI container.
-    /// <see cref="Initialize()"/> must be called before use.
-    /// </summary>
-    internal class DefaultDecryptionService : BaseCryptographyService, IDecryptionService
-    {
-        public List<FileInfo> Decrypt(DirectoryInfo directory, FileInfo privateKeyFile)
-        {
-            var filepairs = GetPairs(directory);
+	/// <summary>
+	/// This service is consumed by the test application to verify encryption is working correctly.
+	/// </summary>
+	internal class DefaultDecryptionService : IDecryptionService
+	{
+		private readonly IDecryptionAlgorithm _decryptionAlgorithm;
 
-            var result = new List<FileInfo>();
-            foreach (var filepair in filepairs)
-            {
-                var decryptedFile = DecryptFilePair(filepair, privateKeyFile);
-                result.Add(decryptedFile);
-            }
+		public DefaultDecryptionService(IDecryptionAlgorithm decryptionAlgorithm)
+		{
+			_decryptionAlgorithm = decryptionAlgorithm;
+		}
 
-            return result;
-        }
+		public List<FileInfo> Decrypt(DirectoryInfo directory, FileInfo privateKeyFile)
+		{
+			var filePairs = GetPairs(directory);
 
-        /// <summary>
-        /// Uses key file, encrypted file and private key (from private key file), decrypts file.
-        /// </summary>
-        /// <param name="encryptedFileKeyPair"></param>
-        /// <param name="privateKeyFile"></param>
-        /// <returns>The decrypted file.</returns>
-        private FileInfo DecryptFilePair(EncryptedFileKeyPair encryptedFileKeyPair, FileInfo privateKeyFile)
-        {
-            var symmetricKey = DecryptSymmetricKey(encryptedFileKeyPair.KeyFile, privateKeyFile);
-            var decryptor = _serviceProvider.GetService<IDecryptionAlgorithm>();
+			var result = new List<FileInfo>();
+			foreach (var filePair in filePairs)
+			{
+				var decryptedFile = DecryptFilePair(filePair, privateKeyFile.FullName);
+				result.Add(decryptedFile);
+			}
 
-            return decryptor.Decrypt(encryptedFileKeyPair.EncryptedFile, symmetricKey);
-        }
+			return result;
+		}
 
-        private byte[] DecryptSymmetricKey(FileInfo encryptedSymmetricKeyFile, FileInfo privateKeyFile)
-        {
-            var encryptor = _serviceProvider.GetService<IEncryptionAlgorithm>();
+		/// <summary>
+		/// Uses key file, encrypted file and private key (from private key file), decrypts file.
+		/// </summary>
+		/// <param name="encryptedFileKeyPair"></param>
+		/// <param name="privateKeyFile"></param>
+		/// <returns>The decrypted file.</returns>
+		private FileInfo DecryptFilePair(EncryptedFileKeyPair encryptedFileKeyPair, string privateKeyFilePath)
+		{
+			var symmetricKey = DecryptSymmetricKey(encryptedFileKeyPair.KeyFile, privateKeyFilePath);
+			
+			return _decryptionAlgorithm.Decrypt(encryptedFileKeyPair.EncryptedFile, symmetricKey);
+		}
 
-            //open .key file, read key
-            var encryptedKey = File.ReadAllBytes(encryptedSymmetricKeyFile.FullName);
-            //decrypt symmetric key using private key
-            var decryptedKey = encryptor.DecryptSymmetricKey(encryptedKey, privateKeyFile);
+		private byte[] DecryptSymmetricKey(FileInfo encryptedSymmetricKeyFile, string privateKeyFilePath)
+		{
+			//open .key file, read key
+			var encryptedKey = File.ReadAllBytes(encryptedSymmetricKeyFile.FullName);
+			//decrypt symmetric key using private key
+			var decryptedKey = _decryptionAlgorithm.DecryptSymmetricKey(encryptedKey, privateKeyFilePath);
 
-            return decryptedKey;
-        }
+			return decryptedKey;
+		}
 
-        private List<EncryptedFileKeyPair> GetPairs(DirectoryInfo directoryInfo)
-        {
-            var keyFiles = directoryInfo.GetFiles("*.key");
-            var filePairs = new List<EncryptedFileKeyPair>();
+		private List<EncryptedFileKeyPair> GetPairs(DirectoryInfo directoryInfo)
+		{
+			var keyFiles = directoryInfo.GetFiles("*.key");
+			var filePairs = new List<EncryptedFileKeyPair>();
 
-            foreach (var keyFile in keyFiles)
-            {
-                var encryptedFileName = $"{keyFile.Name.Replace(".key", string.Empty)}.enc";
-                filePairs.Add(new EncryptedFileKeyPair(keyFile, new FileInfo(Path.Combine(keyFile.DirectoryName, encryptedFileName))));
-            }
+			foreach (var keyFile in keyFiles)
+			{
+				var encryptedFileName = $"{keyFile.Name.Replace(".key", string.Empty)}.enc";
+				filePairs.Add(new EncryptedFileKeyPair(keyFile, new FileInfo(Path.Combine(keyFile.DirectoryName, encryptedFileName))));
+			}
 
-            return filePairs;
-        }
+			return filePairs;
+		}
 
-        class EncryptedFileKeyPair
-        {
-            public EncryptedFileKeyPair(FileInfo keyFile, FileInfo encryptedFile)
-            {
-                KeyFile = keyFile;
-                EncryptedFile = encryptedFile;
-            }
+		class EncryptedFileKeyPair
+		{
+			public EncryptedFileKeyPair(FileInfo keyFile, FileInfo encryptedFile)
+			{
+				KeyFile = keyFile;
+				EncryptedFile = encryptedFile;
+			}
 
-            public FileInfo EncryptedFile { get; }
+			public FileInfo EncryptedFile { get; }
 
-            public FileInfo KeyFile { get; }
-        }
-    }
+			public FileInfo KeyFile { get; }
+		}
+	}
 }

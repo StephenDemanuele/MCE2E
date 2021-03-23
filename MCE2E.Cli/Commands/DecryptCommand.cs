@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using GoCommando;
-using MCE2E.Controller.Services;
+using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MCE2E.Cli.Commands
 {
@@ -9,9 +10,13 @@ namespace MCE2E.Cli.Commands
     [Command("decrypt", "crypto")]
     public class DecryptCommand : BaseCommand
     {
-        [Parameter("targetdir")]
-        [Description("The directory containing the files to decrypt.")]
-        public override string TargetDirectory { get; set; }
+        [Parameter("targetdir", "td")]
+        [Description("The directory where decrypted files should be placed.")]
+        public string TargetDirectory { get; set; }
+
+        [Parameter("sourcedir", "sd")]
+        [Description("The directory where encrypted files are.")]
+        public string SourceDirectory{ get; set; }
 
         [Parameter("pkf")]
         [Description("The full path to the private key file.")]
@@ -19,27 +24,23 @@ namespace MCE2E.Cli.Commands
 
         public override void Run()
         {
-            if (!ValidateArguments())
-            {
-                return;
-            }
-
-            var _decryptionService = new DefaultDecryptionService();
+            Initialize();
+            var decryptionService = ServiceProvider.GetService<IDecryptionService>();
             try
             {
                 var dir = new DirectoryInfo(TargetDirectory);
-                Log($"Decrypting files in {dir.FullName}");
+                Log($"Decrypting files in {dir.FullName}", LogLevel.Info);
 
-                _decryptionService.Initialize(PluginDirectory);
-                var decryptedFiles = _decryptionService.Decrypt(
+                // ReSharper disable PossibleNullReferenceException
+                var decryptedFiles = decryptionService.Decrypt(
                     dir,
                     new FileInfo(PrivateKeyFile));
-                decryptedFiles.ForEach(x => Log($"Decrypted {x.FullName}"));
+                decryptedFiles.ForEach(x => Log($"Decrypted {x.FullName}", LogLevel.Info));
             }
             catch (EncryptionServiceBootstrappingException encryptionServiceBootstrappingException)
             {
-                Log("Error bootstrapping", isError: true);
-                Log(encryptionServiceBootstrappingException.InnerException.Message, isError: true);
+                Log("Error bootstrapping", LogLevel.Error);
+                Log(encryptionServiceBootstrappingException.InnerException.Message, LogLevel.Error);
             }
         }
 

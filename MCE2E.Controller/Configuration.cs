@@ -4,8 +4,16 @@ namespace MCE2E.Controller
 {
     public class Configuration : IConfiguration
     {
-        public string PathToPublicKey => @"C:\Users\sdema\Desktop\sandbox\publickey.xml";
+	    public Configuration(string pathToPublicKey, int symmetricKeyLength)
+	    {
+		    PathToPublicKey = pathToPublicKey;
+		    SymmetricKeyLength = symmetricKeyLength;
+	    }
 
-        public string PathToOpenSsl => @"C:\Program Files\Git\usr\bin\openssl.exe";
+	    public string PathToPublicKey { get; }
+
+	    public int SymmetricKeyLength { get; }
+
+	    public string PathToOpenSsl => @"C:\Program Files\Git\usr\bin";
     }
 }

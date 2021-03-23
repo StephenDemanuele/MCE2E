@@ -1,37 +1,40 @@
 ﻿using System.IO;
-using System.Text;
 using MCE2E.Contracts;
+using System.Threading.Tasks;
 using MCE2E.Controller.Contracts;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MCE2E.Controller.Services
 {
-    /// <summary>
-    /// This service is consumed by the host application.
-    /// This means the dependency DefaultEncryptionService <--> IEncryptionService has to be registered
-    /// with the host's DI container.
-    /// <see cref="Initialize()"/> must be called before use.
-    /// </summary>
-    internal class DefaultEncryptionService : BaseCryptographyService, IEncryptionService
-    {
-        public DirectoryInfo Encrypt(FileInfo fileToEncrypt)
-        {
-            var encryptionAlgorithm = _serviceProvider.GetService<IEncryptionAlgorithm>();
-            var keyFactory = _serviceProvider.GetService<IKeyFactory>();
-            var configuration = _serviceProvider.GetService<IConfiguration>();
+	/// <summary>
+	/// This service is consumed by the host application.
+	/// </summary>
+	internal class DefaultEncryptionService : IEncryptionService
+	{
+		private readonly IConfiguration _configuration;
+		private readonly IEncryptionAlgorithm _encryptionAlgorithm;
+		private readonly IKeyFactory _keyFactory;
 
-            var symmetricKey = keyFactory.Get(16);
-            
-            var encryptedFile = encryptionAlgorithm.Encrypt(symmetricKey, fileToEncrypt);
-            
-            //create encryptedSymmetricKey and save with file
-            var encryptedSymmetricKey = encryptionAlgorithm.EncryptSymmetricKey(symmetricKey, configuration.PathToPublicKey);
+		public DefaultEncryptionService(IConfigurationService configurationService, IEncryptionAlgorithm encryptionAlgorithm, IKeyFactory keyFactory)
+		{
+			_configuration = configurationService.Get();
+			_encryptionAlgorithm = encryptionAlgorithm;
+			_keyFactory = keyFactory;
+		}
 
-            var encryptedSymmetricKeyFilePath = Path.Combine(fileToEncrypt.DirectoryName, "Encrypted", $"{fileToEncrypt.Name}.key");
-            File.WriteAllBytes(encryptedSymmetricKeyFilePath, encryptedSymmetricKey);
-            var keyFile = new FileInfo(encryptedSymmetricKeyFilePath);
+		public Task EncryptAsync(FileInfo fileToEncrypt, DirectoryInfo targetDirectoryInfo)
+		{
+			var symmetricKey = _keyFactory.Get(16);
+			
+			var encryptedFile = _encryptionAlgorithm.Encrypt(symmetricKey, fileToEncrypt, targetDirectoryInfo);
+			
+			//create encryptedSymmetricKey and save with file
+			var encryptedSymmetricKey = _encryptionAlgorithm.EncryptSymmetricKey(symmetricKey, _configuration.PathToPublicKey);
 
-            return keyFile.Directory;
-        }
-    }
+			var encryptedSymmetricKeyFilePath = Path.Combine(targetDirectoryInfo.FullName, $"{fileToEncrypt.Name}.key");
+			File.WriteAllBytes(encryptedSymmetricKeyFilePath, encryptedSymmetricKey);
+			var keyFile = new FileInfo(encryptedSymmetricKeyFilePath);
+
+			return Task.CompletedTask;
+		}
+	}
 }

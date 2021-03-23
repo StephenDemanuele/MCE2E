@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MCE2E.Controller.Bootstrapping
 {
-    internal class ServiceProviderBuilder
+    public class EncryptionServiceProviderBuilder
     {
         public IServiceProvider Build(string pluginLibraryPath = "")
         {

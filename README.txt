@@ -63,7 +63,7 @@ The encryption functions (using AES) are defined in the library MCE2E.DefaultEnc
 These functions are:
 * byte[] EncryptSymmetricKey(byte[] key)
 * byte[] DecryptSymmetricKey(byte[] encryptedKey, FileInfo privateKeyFile)
-* FileInfo Encrypt(byte[] key, FileInfo fileToEncrypt)
+* DirectoryInfo Encrypt(byte[] key, FileInfo fileToEncrypt)
 * FileInfo Decrypt(FileInfo encryptedFile, byte[] key)
 
 An alternative encryption algorithm may be used and implemented in another library and plugged in to the application.

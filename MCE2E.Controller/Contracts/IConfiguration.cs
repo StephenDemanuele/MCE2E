@@ -4,6 +4,8 @@
     {
         string PathToPublicKey { get; }
 
+        int SymmetricKeyLength { get; }
+
         string PathToOpenSsl { get; }
     }
 }

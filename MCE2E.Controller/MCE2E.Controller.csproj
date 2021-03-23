@@ -58,12 +58,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapping\DefaultBootstrapper.cs" />
-    <Compile Include="Bootstrapping\ServiceProviderBuilder.cs" />
+    <Compile Include="Bootstrapping\EncryptionServiceProviderBuilder.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Contracts\IConfiguration.cs" />
+    <Compile Include="Contracts\IConfigurationService.cs" />
     <Compile Include="Contracts\IDecryptionService.cs" />
     <Compile Include="Contracts\IEncryptionService.cs" />
-    <Compile Include="Services\BaseCryptographyService.cs" />
+    <Compile Include="Factories\KeyFactory.cs" />
+    <Compile Include="Services\DefaultConfigurationService.cs" />
     <Compile Include="Services\DefaultDecryptionService.cs" />
     <Compile Include="Services\DefaultEncryptionService.cs" />
     <Compile Include="Exceptions\EncryptionServiceBootstrappingException.cs" />

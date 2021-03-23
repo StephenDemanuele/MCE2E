@@ -89,6 +89,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y $(TargetPath) C:\dev\MCE2E\MCE2E.Cli\bin\Debug\</PostBuildEvent>
+    <PostBuildEvent>copy /Y $(TargetPath) $(SolutionDir)\MCE2E.Cli\bin\Debug\
+copy /Y $(TargetPath) $(SolutionDir)\MCE2E.UnitTests\bin\Debug\netcoreapp3.1\</PostBuildEvent>
   </PropertyGroup>
 </Project>
