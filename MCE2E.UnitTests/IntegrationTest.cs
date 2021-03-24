@@ -1,23 +1,26 @@
 using Xunit;
 using System;
 using System.IO;
+using System.Linq;
 using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
+using FluentAssertions;
+
 // ReSharper disable PossibleNullReferenceException
 
 namespace MCE2E.UnitTests
 {
-	public class UnitTest1
+	public class IntegrationTest
 	{
 		private readonly IServiceProvider _serviceProvider;
-		public UnitTest1()
+		public IntegrationTest()
 		{
 			_serviceProvider = new EncryptionServiceProviderBuilder().Build();
 		}
 
 		[Fact]
-		public void Test1()
+		public void EncryptThenDecryptFileShouldSucceed()
 		{
 			var fileToEncryptPath = Path.Combine(Environment.CurrentDirectory, "SubjectFiles", "bible.txt");
 			if (!File.Exists(fileToEncryptPath))
@@ -36,7 +39,7 @@ namespace MCE2E.UnitTests
 			var targetDirectory = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "Encrypted"));
 			if (Directory.Exists(targetDirectory.FullName))
 			{
-				Directory.Delete(targetDirectory.FullName);
+				Directory.Delete(targetDirectory.FullName, recursive: true);
 			}
 
 			var encryptionService = _serviceProvider.GetService<IEncryptionService>();
@@ -44,6 +47,11 @@ namespace MCE2E.UnitTests
 
 			var decryptionService = _serviceProvider.GetService<IDecryptionService>();
 			var decryptedFiles = decryptionService.Decrypt(targetDirectory, privateKeyFile);
+
+			decryptedFiles.Should().NotBeNullOrEmpty().And.Subject.Count().Should()
+			              .Be(1, "because only 1 file was encrypted");
+
+			decryptedFiles[0].Name.Should().BeEquivalentTo(fileToEncrypt.Name);
 		}
 	}
 }

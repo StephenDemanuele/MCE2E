@@ -10,10 +10,14 @@ namespace MCE2E.Controller.Services
 	/// </summary>
 	internal class DefaultDecryptionService : IDecryptionService
 	{
+		private readonly IEncryptionAlgorithm _encryptionAlgorithm;
 		private readonly IDecryptionAlgorithm _decryptionAlgorithm;
 
-		public DefaultDecryptionService(IDecryptionAlgorithm decryptionAlgorithm)
+		public DefaultDecryptionService(
+			IEncryptionAlgorithm encryptionAlgorithm, 
+			IDecryptionAlgorithm decryptionAlgorithm)
 		{
+			_encryptionAlgorithm = encryptionAlgorithm;
 			_decryptionAlgorithm = decryptionAlgorithm;
 		}
 
@@ -49,7 +53,7 @@ namespace MCE2E.Controller.Services
 			//open .key file, read key
 			var encryptedKey = File.ReadAllBytes(encryptedSymmetricKeyFile.FullName);
 			//decrypt symmetric key using private key
-			var decryptedKey = _decryptionAlgorithm.DecryptSymmetricKey(encryptedKey, privateKeyFilePath);
+			var decryptedKey = _encryptionAlgorithm.DecryptSymmetricKey(encryptedKey, privateKeyFilePath);
 
 			return decryptedKey;
 		}

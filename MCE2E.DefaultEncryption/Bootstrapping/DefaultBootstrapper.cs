@@ -9,6 +9,7 @@ namespace MCE2E.DefaultEncryption.Bootstrapping
         {
             serviceCollection.AddSingleton<IEncryptionAlgorithm, AESEncryption>();
             serviceCollection.AddSingleton<IDecryptionAlgorithm, AESEncryption>();
+            serviceCollection.AddScoped<IStreamedEncryptionAlgorithm, StreamedAesEncryption>();
         }
     }
 }

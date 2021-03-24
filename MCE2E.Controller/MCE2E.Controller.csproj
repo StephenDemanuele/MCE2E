@@ -64,6 +64,7 @@
     <Compile Include="Contracts\IConfigurationService.cs" />
     <Compile Include="Contracts\IDecryptionService.cs" />
     <Compile Include="Contracts\IEncryptionService.cs" />
+    <Compile Include="Contracts\IStreamedEncryptionService.cs" />
     <Compile Include="Factories\KeyFactory.cs" />
     <Compile Include="Services\DefaultConfigurationService.cs" />
     <Compile Include="Services\DefaultDecryptionService.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Exceptions\EncryptionServiceBootstrappingException.cs" />
     <Compile Include="Factories\OpenSSLKeyFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\StreamedEncryptionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MCE2E.Contracts\MCE2E.Contracts.csproj">
