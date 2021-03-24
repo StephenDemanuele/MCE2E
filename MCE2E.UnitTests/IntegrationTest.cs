@@ -2,6 +2,7 @@ using Xunit;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,15 +36,16 @@ namespace MCE2E.UnitTests
 				throw new Exception($"File does not exist at {privateKeyFilePath}");
 			}
 			var privateKeyFile = new FileInfo(privateKeyFilePath);
-			
-			var targetDirectory = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "Encrypted"));
+
+			var targetDirectoryPath = Path.Combine(Environment.CurrentDirectory, "Encrypted");
+			var targetDirectory = new DirectoryInfo(targetDirectoryPath);
 			if (Directory.Exists(targetDirectory.FullName))
 			{
 				Directory.Delete(targetDirectory.FullName, recursive: true);
 			}
 
 			var encryptionService = _serviceProvider.GetService<IEncryptionService>();
-			encryptionService.EncryptAsync(fileToEncrypt, targetDirectory).Wait();
+			encryptionService.EncryptAsync(fileToEncrypt, targetDirectoryPath, CancellationToken.None).Wait();
 
 			var decryptionService = _serviceProvider.GetService<IDecryptionService>();
 			var decryptedFiles = decryptionService.Decrypt(targetDirectory, privateKeyFile);

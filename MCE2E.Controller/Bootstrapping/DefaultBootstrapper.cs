@@ -12,9 +12,8 @@ namespace MCE2E.Controller.Bootstrapping
 		{
 			serviceCollection.AddSingleton<IConfigurationService, DefaultConfigurationService>();
 			serviceCollection.AddSingleton<IKeyFactory, KeyFactory>();
-			serviceCollection.AddSingleton<IEncryptionService, DefaultEncryptionService>();
+			serviceCollection.AddSingleton<IEncryptionService, StreamedEncryptionService>();
 			serviceCollection.AddSingleton<IDecryptionService, DefaultDecryptionService>();
-			serviceCollection.AddScoped<IStreamedEncryptionService, StreamedEncryptionService>();
 		}
 	}
 }

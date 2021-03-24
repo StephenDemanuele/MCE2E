@@ -73,6 +73,27 @@ namespace MCE2E.DefaultEncryption
 			return decryptedSymmetricKey;
 		}
 
+		public ICryptoTransform InitializeEncryption(byte[] key, Stream targetStream)
+		{
+			var aes = Aes.Create();
+			aes.Key = key;
+			aes.GenerateIV();
+			//write IV at start of target stream. must be written to targetStream so it is unencrypted
+			targetStream.Write(aes.IV, 0, aes.IV.Length);
+
+			return aes.CreateEncryptor();
+		}
+
+		public ICryptoTransform InitializeDecryption(byte[] key, Stream sourceStream)
+		{
+			var aes = Aes.Create();
+			var iv = new byte[aes.IV.Length];
+			sourceStream.Read(iv, 0, iv.Length);
+			var cryptoTransform = aes.CreateDecryptor(key, iv);
+
+			return cryptoTransform;
+		}
+
 		public FileInfo Encrypt(byte[] key, FileInfo sourceFileToEncrypt, DirectoryInfo targetDirectory)
 		{
 			using (var aes = Aes.Create())
@@ -122,7 +143,8 @@ namespace MCE2E.DefaultEncryption
 
 		public FileInfo Decrypt(FileInfo encryptedFile, byte[] symmetricKey)
 		{
-			var decryptedStreamPath = Path.Combine(encryptedFile.DirectoryName, encryptedFile.Name.Replace(".enc", string.Empty));
+			var decryptedStreamPath = Path.Combine(encryptedFile.DirectoryName,
+				encryptedFile.Name.Replace(".enc", string.Empty));
 			using (var aesAlg = Aes.Create())
 			{
 				aesAlg.Key = symmetricKey;
@@ -153,6 +175,7 @@ namespace MCE2E.DefaultEncryption
 
 						cryptoStream.Close();
 					}
+
 					encryptedStream.Close();
 				}
 			}

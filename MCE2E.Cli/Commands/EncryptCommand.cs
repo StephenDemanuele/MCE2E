@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading;
 using GoCommando;
 using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Exceptions;
@@ -50,7 +51,7 @@ namespace MCE2E.Cli.Commands
 				{
 					Log($"Encrypting {file.Name}", LogLevel.Info);
 					// ReSharper disable once PossibleNullReferenceException
-					encryptionService.EncryptAsync(file, new DirectoryInfo(TargetDirectory)).Wait();
+					encryptionService.EncryptAsync(file, TargetDirectory, CancellationToken.None).Wait();
 					Log("Ready", LogLevel.Info);
 				}
 

@@ -65,7 +65,7 @@ namespace MCE2E.Controller.Services
 
 			foreach (var keyFile in keyFiles)
 			{
-				var encryptedFileName = $"{keyFile.Name.Replace(".key", string.Empty)}.enc";
+				var encryptedFileName = keyFile.Name.Replace(".key", string.Empty);
 				filePairs.Add(new EncryptedFileKeyPair(keyFile, new FileInfo(Path.Combine(keyFile.DirectoryName, encryptedFileName))));
 			}
 

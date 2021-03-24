@@ -48,7 +48,6 @@
     <Compile Include="IDecryptionAlgorithm.cs" />
     <Compile Include="IKeyFactory.cs" />
     <Compile Include="IEncryptionAlgorithm.cs" />
-    <Compile Include="IStreamedEncryptionAlgorithm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
