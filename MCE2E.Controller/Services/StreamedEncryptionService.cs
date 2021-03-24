@@ -30,10 +30,10 @@ namespace MCE2E.Controller.Services
 			CancellationToken cancellationToken)
 		{
 			//add sanity checks on arguments
-			var encryptedFile_FilePath = Path.Combine(targetLocation, $"{sourceFileToEncrypt}.enc");
+			var targetFilepath = Path.Combine(targetLocation, $"{sourceFileToEncrypt}.enc");
 
 			var symmetricKey = _keyFactory.Get(16);
-			using (var targetStream = new FileStream(encryptedFile_FilePath, FileMode.CreateNew))
+			using (var targetStream = new FileStream(targetFilepath, FileMode.CreateNew))
 			{
 				_encryptionAlgorithm.Initialize(symmetricKey, targetStream);
 				using (var cryptoStream = new CryptoStream(targetStream, _encryptionAlgorithm.GetEncryptor(), CryptoStreamMode.Write))
@@ -59,10 +59,10 @@ namespace MCE2E.Controller.Services
 			}
 
 			//encrypt encryptedSymmetricKey and save with file
-			var encryptedSymmetricKey_FilePath = Path.Combine(targetLocation, $"{sourceFileToEncrypt}.enc.key");
+			var encryptedSymmetricKeyFilepath = Path.Combine(targetLocation, $"{sourceFileToEncrypt}.enc.key");
 			var publicKeyFilePath = _configuration.PathToPublicKey;
 			var encryptedSymmetricKey = _encryptionAlgorithm.EncryptSymmetricKey(symmetricKey, publicKeyFilePath);
-			File.WriteAllBytes(encryptedSymmetricKey_FilePath, encryptedSymmetricKey);
+			File.WriteAllBytes(encryptedSymmetricKeyFilepath, encryptedSymmetricKey);
 			return Task.CompletedTask;
 		}
 	}
