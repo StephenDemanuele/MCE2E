@@ -73,30 +73,32 @@ namespace MCE2E.DefaultEncryption
 			return decryptedSymmetricKey;
 		}
 
-		public FileInfo Encrypt(byte[] key, FileInfo fileToEncrypt, DirectoryInfo targetDirectory)
+		public FileInfo Encrypt(byte[] key, FileInfo sourceFileToEncrypt, DirectoryInfo targetDirectory)
 		{
-			using (var aesAlg = Aes.Create())
+			using (var aes = Aes.Create())
 			{
-				aesAlg.Key = key;
-				aesAlg.GenerateIV();
+				aes.Key = key;
+				aes.GenerateIV();
 
-				var encryptedStreamPath = Path.Combine(targetDirectory.FullName, $"{fileToEncrypt.Name}.enc");
+				var encryptedStreamPath = Path.Combine(targetDirectory.FullName, $"{sourceFileToEncrypt.Name}.enc");
 				if (!Directory.Exists(encryptedStreamPath))
 				{
 					Directory.CreateDirectory(Path.GetDirectoryName(encryptedStreamPath));
 				}
 
-				using (var encryptedStream = new FileStream(encryptedStreamPath, FileMode.Create))
+				using (var targetStream = new FileStream(encryptedStreamPath, FileMode.Create))
 				{
-					var cryptoTransform = aesAlg.CreateEncryptor();
+					var cryptoTransform = aes.CreateEncryptor();
 
-					using (var cryptoStream = new CryptoStream(encryptedStream, cryptoTransform, CryptoStreamMode.Write))
+					using (var cryptoStream = new CryptoStream(targetStream, cryptoTransform, CryptoStreamMode.Write))
 					{
-						encryptedStream.Write(aesAlg.IV, 0, aesAlg.IV.Length);
+						//this is written unencrypted because at decryption stage, IV is needed
+						// to generate ICryptoTransform.
+						targetStream.Write(aes.IV, 0, aes.IV.Length);
 
 						using (var writer = new StreamWriter(cryptoStream))
 						{
-							using (var reader = new StreamReader(fileToEncrypt.FullName))
+							using (var reader = new StreamReader(sourceFileToEncrypt.FullName))
 							{
 								var chunkSize = 1024;
 								var buffer = new char[chunkSize];
@@ -111,7 +113,7 @@ namespace MCE2E.DefaultEncryption
 						}
 						cryptoStream.Close();
 					}
-					encryptedStream.Close();
+					targetStream.Close();
 				}
 
 				return new FileInfo(encryptedStreamPath);

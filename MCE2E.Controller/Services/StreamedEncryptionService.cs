@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Threading;
+﻿using System.IO;
 using MCE2E.Contracts;
+using System.Threading;
 using System.Threading.Tasks;
 using MCE2E.Controller.Contracts;
+using System.Security.Cryptography;
 
 namespace MCE2E.Controller.Services
 {
@@ -16,28 +14,55 @@ namespace MCE2E.Controller.Services
 		private readonly IStreamedEncryptionAlgorithm _encryptionAlgorithm;
 		private readonly IKeyFactory _keyFactory;
 
-		public StreamedEncryptionService(IConfigurationService configurationService, IStreamedEncryptionAlgorithm encryptionAlgorithm, IKeyFactory keyFactory)
+		public StreamedEncryptionService(
+			IConfigurationService configurationService,
+			IStreamedEncryptionAlgorithm encryptionAlgorithm,
+			IKeyFactory keyFactory)
 		{
 			_configuration = configurationService.Get();
 			_encryptionAlgorithm = encryptionAlgorithm;
 			_keyFactory = keyFactory;
 		}
 
-
-
 		public Task EncryptAsync(
-			FileInfo publicKeyFile, 
-			DirectoryInfo targetDirectoryInfo, 
+			FileInfo sourceFileToEncrypt,
+			string targetLocation,
 			CancellationToken cancellationToken)
 		{
+			//add sanity checks on arguments
+			var encryptedFile_FilePath = Path.Combine(targetLocation, $"{sourceFileToEncrypt}.enc");
+
 			var symmetricKey = _keyFactory.Get(16);
-			_encryptionAlgorithm.Initialize(symmetricKey);
-			
-			var encryptor = _encryptionAlgorithm.GetEncryptor();
+			using (var targetStream = new FileStream(encryptedFile_FilePath, FileMode.CreateNew))
+			{
+				_encryptionAlgorithm.Initialize(symmetricKey, targetStream);
+				using (var cryptoStream = new CryptoStream(targetStream, _encryptionAlgorithm.GetEncryptor(), CryptoStreamMode.Write))
+				{
+					using (var cryptoStreamWriter = new StreamWriter(cryptoStream))
+					{
+						using (var sourceFileStreamReader = new StreamReader(sourceFileToEncrypt.FullName))
+						{
+							var chunkSize = 1024;
+							var buffer = new char[chunkSize];
+							int bytesRead;
+							while ((bytesRead = sourceFileStreamReader.Read(buffer, 0, buffer.Length)) > 0)
+							{
+								cryptoStreamWriter.Write(buffer, 0, bytesRead);
+							}
+							sourceFileStreamReader.Close();
+						}
+						cryptoStreamWriter.Close();
+					}
+					cryptoStream.Close();
+				}
+				targetStream.Close();
+			}
 
 			//encrypt encryptedSymmetricKey and save with file
-			var encryptedSymmetricKey = _encryptionAlgorithm.EncryptSymmetricKey(symmetricKey, publicKeyFile.FullName);
-			
+			var encryptedSymmetricKey_FilePath = Path.Combine(targetLocation, $"{sourceFileToEncrypt}.enc.key");
+			var publicKeyFilePath = _configuration.PathToPublicKey;
+			var encryptedSymmetricKey = _encryptionAlgorithm.EncryptSymmetricKey(symmetricKey, publicKeyFilePath);
+			File.WriteAllBytes(encryptedSymmetricKey_FilePath, encryptedSymmetricKey);
 			return Task.CompletedTask;
 		}
 	}

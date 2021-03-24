@@ -8,6 +8,7 @@ namespace MCE2E.Contracts
 		 void Encrypt(MemoryStream streamToEncrypt, CryptoStream cryptoStream);
 
 		 ICryptoTransform GetEncryptor();
-		 void Initialize(byte[] key);
+
+		 void Initialize(byte[] key, Stream targetStream);
 	}
 }

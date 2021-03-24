@@ -6,6 +6,6 @@ namespace MCE2E.Controller.Contracts
 {
 	public interface IStreamedEncryptionService
 	{
-		Task EncryptAsync(FileInfo publicKeyFile, DirectoryInfo targetDirectoryInfo, CancellationToken cancellationToken);
+		Task EncryptAsync(FileInfo sourceFileToEncrypt, string targetLocation,  CancellationToken cancellationToken);
 	}
 }

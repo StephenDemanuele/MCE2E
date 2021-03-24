@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Sockets;
 using MCE2E.Contracts;
 using System.Security.Cryptography;
 
@@ -14,15 +15,12 @@ namespace MCE2E.DefaultEncryption
 			_aes = Aes.Create();
 		}
 
-		public void Initialize(byte[] key)
+		public void Initialize(byte[] key, Stream targetStream)
 		{
 			_aes.Key = key;
 			_aes.GenerateIV();
-
-			//at which point does this need to be written?
-			//definitely at start of stream;
-			//which stream?
-
+			//write IV at start of target stream. must be written to targetStream so it is unencrypted
+			targetStream.Write(_aes.IV, 0, _aes.IV.Length);
 		}
 
 		public void Encrypt(MemoryStream streamToEncrypt, CryptoStream cryptoStream)

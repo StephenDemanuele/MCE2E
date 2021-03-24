@@ -14,7 +14,10 @@ namespace MCE2E.Controller.Services
 		private readonly IEncryptionAlgorithm _encryptionAlgorithm;
 		private readonly IKeyFactory _keyFactory;
 
-		public DefaultEncryptionService(IConfigurationService configurationService, IEncryptionAlgorithm encryptionAlgorithm, IKeyFactory keyFactory)
+		public DefaultEncryptionService(
+			IConfigurationService configurationService, 
+			IEncryptionAlgorithm encryptionAlgorithm, 
+			IKeyFactory keyFactory)
 		{
 			_configuration = configurationService.Get();
 			_encryptionAlgorithm = encryptionAlgorithm;
@@ -28,11 +31,12 @@ namespace MCE2E.Controller.Services
 			var encryptedFile = _encryptionAlgorithm.Encrypt(symmetricKey, fileToEncrypt, targetDirectoryInfo);
 			
 			//create encryptedSymmetricKey and save with file
-			var encryptedSymmetricKey = _encryptionAlgorithm.EncryptSymmetricKey(symmetricKey, _configuration.PathToPublicKey);
+			var encryptedSymmetricKey = _encryptionAlgorithm.EncryptSymmetricKey(
+				symmetricKey, 
+				_configuration.PathToPublicKey);
 
 			var encryptedSymmetricKeyFilePath = Path.Combine(targetDirectoryInfo.FullName, $"{fileToEncrypt.Name}.key");
 			File.WriteAllBytes(encryptedSymmetricKeyFilePath, encryptedSymmetricKey);
-			var keyFile = new FileInfo(encryptedSymmetricKeyFilePath);
 
 			return Task.CompletedTask;
 		}
