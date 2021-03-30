@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Net.Sockets;
 using MCE2E.Contracts;
 using System.Threading;
 using System.Threading.Tasks;

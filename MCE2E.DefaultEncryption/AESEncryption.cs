@@ -93,54 +93,7 @@ namespace MCE2E.DefaultEncryption
 
 			return cryptoTransform;
 		}
-
-		public FileInfo Encrypt(byte[] key, FileInfo sourceFileToEncrypt, DirectoryInfo targetDirectory)
-		{
-			using (var aes = Aes.Create())
-			{
-				aes.Key = key;
-				aes.GenerateIV();
-
-				var encryptedStreamPath = Path.Combine(targetDirectory.FullName, $"{sourceFileToEncrypt.Name}.enc");
-				if (!Directory.Exists(encryptedStreamPath))
-				{
-					Directory.CreateDirectory(Path.GetDirectoryName(encryptedStreamPath));
-				}
-
-				using (var targetStream = new FileStream(encryptedStreamPath, FileMode.Create))
-				{
-					var cryptoTransform = aes.CreateEncryptor();
-
-					using (var cryptoStream = new CryptoStream(targetStream, cryptoTransform, CryptoStreamMode.Write))
-					{
-						//this is written unencrypted because at decryption stage, IV is needed
-						// to generate ICryptoTransform.
-						targetStream.Write(aes.IV, 0, aes.IV.Length);
-
-						using (var writer = new StreamWriter(cryptoStream))
-						{
-							using (var reader = new StreamReader(sourceFileToEncrypt.FullName))
-							{
-								var chunkSize = 1024;
-								var buffer = new char[chunkSize];
-								int bytesRead;
-								while ((bytesRead = reader.Read(buffer, 0, buffer.Length)) > 0)
-								{
-									writer.Write(buffer, 0, bytesRead);
-								}
-								reader.Close();
-							}
-							writer.Close();
-						}
-						cryptoStream.Close();
-					}
-					targetStream.Close();
-				}
-
-				return new FileInfo(encryptedStreamPath);
-			}
-		}
-
+		
 		public FileInfo Decrypt(FileInfo encryptedFile, byte[] symmetricKey)
 		{
 			var decryptedStreamPath = Path.Combine(encryptedFile.DirectoryName,

@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using MCE2E.Contracts;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using MCE2E.Controller.Contracts;
 
 namespace MCE2E.Controller.Services
@@ -38,13 +40,46 @@ namespace MCE2E.Controller.Services
 		/// <summary>
 		/// Uses key file, encrypted file and private key (from private key file), decrypts file.
 		/// </summary>
-		/// <param name="encryptedFileKeyPair"></param>
-		/// <param name="privateKeyFile"></param>
+		/// <param name="encryptedFileKeyPair">The pair of encrypted file and its key.</param>
+		/// <param name="privateKeyFilePath">Fully qualified path to the private key.</param>
 		/// <returns>The decrypted file.</returns>
 		private FileInfo DecryptFilePair(EncryptedFileKeyPair encryptedFileKeyPair, string privateKeyFilePath)
 		{
 			var symmetricKey = DecryptSymmetricKey(encryptedFileKeyPair.KeyFile, privateKeyFilePath);
+
+			var encryptedFile = encryptedFileKeyPair.EncryptedFile;
+			var decryptedStreamPath = Path.Combine(encryptedFile.DirectoryName, encryptedFile.Name.Replace(".enc", string.Empty));
+		
+				//reads encrypted data from encrypted file
+				using (var encryptedStream = new FileStream(encryptedFile.FullName, FileMode.Open))
+				{
+					var cryptoTransform = _decryptionAlgorithm.InitializeDecryption(symmetricKey, encryptedStream);
+
+					//create a stream which reads the encrypted stream and applies the crypto-transform
+					using (var cryptoStream = new CryptoStream(encryptedStream, cryptoTransform, CryptoStreamMode.Read))
+					{
+						using (var writer = new StreamWriter(decryptedStreamPath))
+						{
+							var chunkSize = 1024;
+							var buffer = new byte[chunkSize];
+							int bytesRead;
+							while ((bytesRead = cryptoStream.Read(buffer, 0, buffer.Length)) > 0)
+							{
+								var x = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+								writer.Write(x);
+							}
+
+							writer.Close();
+						}
+
+						cryptoStream.Close();
+					}
+
+					encryptedStream.Close();
+				}
 			
+
+			return new FileInfo(decryptedStreamPath);
 			return _decryptionAlgorithm.Decrypt(encryptedFileKeyPair.EncryptedFile, symmetricKey);
 		}
 
