@@ -4,8 +4,12 @@ using System.Threading.Tasks;
 
 namespace MCE2E.Controller.Contracts
 {
-    public interface IEncryptionService
-    {
-        Task EncryptAsync(FileInfo publicKeyFile, string targetLocation, CancellationToken cancellationToken);
-    }
+	public interface IEncryptionService
+	{
+		Task EncryptAsync(
+			FileInfo publicKeyFile, 
+			string targetLocation,
+			TargetType targetType, 
+			CancellationToken cancellationToken);
+	}
 }

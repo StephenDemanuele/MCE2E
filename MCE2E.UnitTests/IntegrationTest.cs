@@ -7,6 +7,7 @@ using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 using FluentAssertions;
+using MCE2E.Controller;
 
 // ReSharper disable PossibleNullReferenceException
 
@@ -45,7 +46,7 @@ namespace MCE2E.UnitTests
 			}
 
 			var encryptionService = _serviceProvider.GetService<IEncryptionService>();
-			encryptionService.EncryptAsync(fileToEncrypt, targetDirectoryPath, CancellationToken.None).Wait();
+			encryptionService.EncryptAsync(fileToEncrypt, targetDirectoryPath, TargetType.File, CancellationToken.None).Wait();
 
 			var decryptionService = _serviceProvider.GetService<IDecryptionService>();
 			var decryptedFiles = decryptionService.Decrypt(targetDirectory, privateKeyFile);

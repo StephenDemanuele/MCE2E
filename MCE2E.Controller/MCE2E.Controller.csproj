@@ -60,15 +60,21 @@
     <Compile Include="Bootstrapping\DefaultBootstrapper.cs" />
     <Compile Include="Bootstrapping\EncryptionServiceProviderBuilder.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Contracts\FtpStreamProviderConfiguration.cs" />
     <Compile Include="Contracts\IConfiguration.cs" />
     <Compile Include="Contracts\IConfigurationService.cs" />
     <Compile Include="Contracts\IDecryptionService.cs" />
     <Compile Include="Contracts\IEncryptionService.cs" />
-    <Compile Include="Factories\KeyFactory.cs" />
+    <Compile Include="Contracts\IStreamProvider.cs" />
+    <Compile Include="Contracts\IStreamProviderConfiguration.cs" />
+    <Compile Include="Enumerations.cs" />
+    <Compile Include="Providers\FileStreamProvider.cs" />
+    <Compile Include="Providers\FtpStreamProvider.cs" />
+    <Compile Include="Providers\SymmetricKeyProvider.cs" />
     <Compile Include="Services\DefaultConfigurationService.cs" />
     <Compile Include="Services\DefaultDecryptionService.cs" />
     <Compile Include="Exceptions\EncryptionServiceBootstrappingException.cs" />
-    <Compile Include="Factories\OpenSSLKeyFactory.cs" />
+    <Compile Include="Providers\OpenSSLKeyFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\StreamedEncryptionService.cs" />
   </ItemGroup>

@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Net;
 using MCE2E.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,24 +14,30 @@ namespace MCE2E.Controller.Services
 
 		private readonly IConfiguration _configuration;
 		private readonly IEncryptionAlgorithm _encryptionAlgorithm;
-		private readonly IKeyFactory _keyFactory;
+		private readonly ISymmetricKeyProvider _keyFactory;
+		private readonly IStreamProvider[] _streamProviders;
 
 		public StreamedEncryptionService(
 			IConfigurationService configurationService,
 			IEncryptionAlgorithm encryptionAlgorithm,
-			IKeyFactory keyFactory)
+			ISymmetricKeyProvider keyFactory,
+			IStreamProvider[] streamProviders)
 		{
 			_configuration = configurationService.Get();
 			_encryptionAlgorithm = encryptionAlgorithm;
 			_keyFactory = keyFactory;
+			_streamProviders = streamProviders;
 		}
 
 		//TODO: use CancellationToken and check for cancellations
 		public async Task EncryptAsync(
 			FileInfo sourceFileToEncrypt,
 			string targetLocation,
+			TargetType targetType,
 			CancellationToken cancellationToken)
 		{
+			var streamProvider = _streamProviders.First(x => x.Target == targetType);
+
 			//add sanity checks on argument
 			var targetFilepath = Path.Combine(targetLocation, $"{sourceFileToEncrypt.Name}.enc");
 			var symmetricKey = _keyFactory.Get(16);
@@ -39,7 +47,7 @@ namespace MCE2E.Controller.Services
 				Directory.CreateDirectory(targetLocation);
 			}
 
-			using (var targetStream = new FileStream(targetFilepath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+			using (var targetStream = streamProvider.Get(targetFilepath))
 			{
 				var encryptor = _encryptionAlgorithm.InitializeEncryption(symmetricKey, targetStream);
 				using (var cryptoStream = new CryptoStream(targetStream, encryptor, CryptoStreamMode.Write))

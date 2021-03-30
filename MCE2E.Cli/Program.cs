@@ -1,10 +1,13 @@
-﻿namespace MCE2E.Cli
+﻿using System;
+
+namespace MCE2E.Cli
 {
-    class Program
+	class Program
 	{
-        static void Main(string[] args)
+		static void Main(string[] args)
 		{
-            GoCommando.Go.Run();
+			GoCommando.Go.Run();
+			Console.Read();
 		}
 	}
 }

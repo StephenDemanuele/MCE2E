@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="IBootstrapper.cs" />
     <Compile Include="IDecryptionAlgorithm.cs" />
-    <Compile Include="IKeyFactory.cs" />
+    <Compile Include="ISymmetricKeyProvider.cs" />
     <Compile Include="IEncryptionAlgorithm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
