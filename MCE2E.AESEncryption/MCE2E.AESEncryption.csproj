@@ -7,8 +7,8 @@
     <ProjectGuid>{BAB9194F-6C95-475A-8860-DEB714BAB771}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MCE2E.DefaultEncryption</RootNamespace>
-    <AssemblyName>MCE2E.DefaultEncryption</AssemblyName>
+    <RootNamespace>MCE2E.AESEncryption</RootNamespace>
+    <AssemblyName>MCE2E.AESEncryption</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

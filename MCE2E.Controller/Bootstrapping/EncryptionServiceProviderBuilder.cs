@@ -22,7 +22,7 @@ namespace MCE2E.Controller.Bootstrapping
             }
             else
             {
-                pluginFiles = new string[] { Path.Combine(Environment.CurrentDirectory, "MCE2E.DefaultEncryption.dll") };
+                pluginFiles = new string[] { Path.Combine(Environment.CurrentDirectory, "MCE2E.AESEncryption.dll") };
             }
 
             bootstrapperLog.AppendLine(string.Join(Environment.NewLine, pluginFiles.Select(f => Path.GetFileName(f))));

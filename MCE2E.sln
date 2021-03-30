@@ -14,9 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.txt = README.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE2E.DefaultEncryption", "MCE2E.DefaultEncryption\MCE2E.DefaultEncryption.csproj", "{BAB9194F-6C95-475A-8860-DEB714BAB771}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE2E.AESEncryption", "MCE2E.AESEncryption\MCE2E.AESEncryption.csproj", "{BAB9194F-6C95-475A-8860-DEB714BAB771}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCE2E.UnitTests", "MCE2E.UnitTests\MCE2E.UnitTests.csproj", "{E333AD00-BF84-4409-87B1-211EB9BC662D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MCE2E.UnitTests", "MCE2E.UnitTests\MCE2E.UnitTests.csproj", "{E333AD00-BF84-4409-87B1-211EB9BC662D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

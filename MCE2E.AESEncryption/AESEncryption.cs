@@ -4,7 +4,7 @@ using System.Text;
 using MCE2E.Contracts;
 using System.Security.Cryptography;
 
-namespace MCE2E.DefaultEncryption
+namespace MCE2E.AESEncryption
 {
 	public class AESEncryption : IEncryptionAlgorithm, IDecryptionAlgorithm
 	{

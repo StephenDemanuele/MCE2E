@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace MCE2E.Contracts
 {
-    internal interface IDecryptionAlgorithm
+    public interface IDecryptionAlgorithm
     {
         FileInfo Decrypt(FileInfo encryptedFile, byte[] key);
 

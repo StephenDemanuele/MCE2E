@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MCE2E.AESEncryption\MCE2E.AESEncryption.csproj" />
     <ProjectReference Include="..\MCE2E.Controller\MCE2E.Controller.csproj" />
-    <ProjectReference Include="..\MCE2E.DefaultEncryption\MCE2E.DefaultEncryption.csproj" />
   </ItemGroup>
 
   <ItemGroup>

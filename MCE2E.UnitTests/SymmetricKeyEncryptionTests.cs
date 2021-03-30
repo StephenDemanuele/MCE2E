@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using FluentAssertions;
-using MCE2E.DefaultEncryption;
 using MCE2E.Controller.Factories;
 	
 namespace MCE2E.UnitTests
@@ -24,7 +23,7 @@ namespace MCE2E.UnitTests
 			//setup
 			var keyFactory = new KeyFactory();
 			var symmetricKey = keyFactory.Get(16);
-			var sut = new AESEncryption();
+			var sut = new AESEncryption.AESEncryption();
 
 			//act
 			var encryptedSymmetricKey = sut.EncryptSymmetricKey(symmetricKey, _publicKeyFilePath);
@@ -39,7 +38,7 @@ namespace MCE2E.UnitTests
 		public void EncryptionAttemptWithNullKeyShouldThrowArgumentNullException()
 		{
 			//setup
-			var sut = new AESEncryption();
+			var sut = new AESEncryption.AESEncryption();
 
 			//act
 			var exception = Record.Exception(() => sut.EncryptSymmetricKey(null, pathToPublicKey: null));
@@ -52,7 +51,7 @@ namespace MCE2E.UnitTests
 			//setup
 			var keyFactory = new KeyFactory();
 			var symmetricKey = keyFactory.Get(16);
-			var sut = new AESEncryption();
+			var sut = new AESEncryption.AESEncryption();
 
 			//act
 			var exception = Record.Exception(() => sut.EncryptSymmetricKey(symmetricKey, pathToPublicKey: null));
@@ -65,7 +64,7 @@ namespace MCE2E.UnitTests
 			//setup
 			var keyFactory = new KeyFactory();
 			var symmetricKey = keyFactory.Get(16);
-			var sut = new AESEncryption();
+			var sut = new AESEncryption.AESEncryption();
 
 			//act
 			var exception = Record.Exception(() => sut.EncryptSymmetricKey(symmetricKey, pathToPublicKey: "meh"));
@@ -76,7 +75,7 @@ namespace MCE2E.UnitTests
 		public void DecryptionAttemptWithNullKeyShouldThrowArgumentNullException()
 		{
 			//setup
-			var sut = new AESEncryption();
+			var sut = new AESEncryption.AESEncryption();
 
 			//act
 			var exception = Record.Exception(() => sut.DecryptSymmetricKey(null, privateKeyFilePath: null));
@@ -89,7 +88,7 @@ namespace MCE2E.UnitTests
 			//setup
 			var keyFactory = new KeyFactory();
 			var symmetricKey = keyFactory.Get(16);
-			var sut = new AESEncryption();
+			var sut = new AESEncryption.AESEncryption();
 
 			//act
 			var exception = Record.Exception(() => sut.DecryptSymmetricKey(null, privateKeyFilePath: null));
@@ -102,7 +101,7 @@ namespace MCE2E.UnitTests
 			//setup
 			var keyFactory = new KeyFactory();
 			var symmetricKey = keyFactory.Get(16);
-			var sut = new AESEncryption();
+			var sut = new AESEncryption.AESEncryption();
 
 			//act
 			var exception = Record.Exception(() => sut.DecryptSymmetricKey(symmetricKey, privateKeyFilePath: "meh"));

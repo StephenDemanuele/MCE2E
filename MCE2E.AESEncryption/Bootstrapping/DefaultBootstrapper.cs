@@ -1,7 +1,7 @@
 ﻿using MCE2E.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MCE2E.DefaultEncryption.Bootstrapping
+namespace MCE2E.AESEncryption.Bootstrapping
 {
     public class DefaultBootstrapper : IBootstrapper
     {
