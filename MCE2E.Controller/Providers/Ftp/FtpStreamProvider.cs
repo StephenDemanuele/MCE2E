@@ -1,22 +1,30 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using MCE2E.Controller.Contracts;
 
-namespace MCE2E.Controller.Providers
+namespace MCE2E.Controller.Providers.Ftp
 {
 	internal class FtpStreamProvider : IStreamProvider
 	{
 		private readonly FtpStreamConfiguration _configuration;
+		private readonly bool _isAvailable;
 
-		public FtpStreamProvider(FtpStreamConfiguration configuration)
+		public FtpStreamProvider(FtpStreamConfigurationProvider ftpStreamConfigurationProvider)
 		{
-			_configuration = configuration;
+			_isAvailable = ftpStreamConfigurationProvider.TryGet(out _configuration);
+			
 		}
 
 		public TargetType Target => TargetType.Ftp;
 
 		public Stream Get(string targetFilepath)
 		{
+			if (!_isAvailable)
+			{
+				throw new InvalidOperationException("Could not load FTP configuration, streaming over FTP is not possible.");
+			}
+
 			//Create a FTPWebRequest
 			var request = (FtpWebRequest)WebRequest.Create("ftp://" + "FTPServer" + @"/" + targetFilepath);
 			request.Method = WebRequestMethods.Ftp.UploadFile;
@@ -24,14 +32,5 @@ namespace MCE2E.Controller.Providers
 
 			return request.GetRequestStream();
 		}
-	}
-
-	internal class FtpStreamConfiguration
-	{
-		public string ServerUrl { get; set; }
-
-		public string Username { get; set; }
-
-		public string Password { get; set; }
 	}
 }

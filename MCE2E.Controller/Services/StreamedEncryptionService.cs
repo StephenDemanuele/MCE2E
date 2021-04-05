@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using MCE2E.Contracts;
@@ -21,12 +23,12 @@ namespace MCE2E.Controller.Services
 			IConfigurationService configurationService,
 			IEncryptionAlgorithm encryptionAlgorithm,
 			ISymmetricKeyProvider keyFactory,
-			IStreamProvider[] streamProviders)
+			IEnumerable<IStreamProvider> streamProviders)
 		{
 			_configuration = configurationService.Get();
 			_encryptionAlgorithm = encryptionAlgorithm;
 			_keyFactory = keyFactory;
-			_streamProviders = streamProviders;
+			_streamProviders = streamProviders.ToArray();
 		}
 
 		//TODO: use CancellationToken and check for cancellations

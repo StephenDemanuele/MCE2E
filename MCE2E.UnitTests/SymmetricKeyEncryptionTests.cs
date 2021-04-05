@@ -2,8 +2,8 @@
 using System;
 using System.IO;
 using FluentAssertions;
-using MCE2E.Controller.Factories;
-	
+using MCE2E.Controller.Providers;
+
 namespace MCE2E.UnitTests
 {
 	public class SymmetricKeyEncryptionTests
@@ -21,7 +21,7 @@ namespace MCE2E.UnitTests
 		public void DecryptingEncryptedKeyShouldBeSameAsOriginalKey()
 		{
 			//setup
-			var keyFactory = new KeyFactory();
+			var keyFactory = new SymmetricKeyProvider();
 			var symmetricKey = keyFactory.Get(16);
 			var sut = new AESEncryption.AESEncryption();
 
@@ -49,7 +49,7 @@ namespace MCE2E.UnitTests
 		public void EncryptionAttemptWithNullPublicKeyPathShouldThrowArgumentNullException()
 		{
 			//setup
-			var keyFactory = new KeyFactory();
+			var keyFactory = new SymmetricKeyProvider();
 			var symmetricKey = keyFactory.Get(16);
 			var sut = new AESEncryption.AESEncryption();
 
@@ -62,7 +62,7 @@ namespace MCE2E.UnitTests
 		public void EncryptionAttemptWithMissingPublicKeyPathShouldThrowFileNotFoundException()
 		{
 			//setup
-			var keyFactory = new KeyFactory();
+			var keyFactory = new SymmetricKeyProvider();
 			var symmetricKey = keyFactory.Get(16);
 			var sut = new AESEncryption.AESEncryption();
 
@@ -86,7 +86,7 @@ namespace MCE2E.UnitTests
 		public void DecryptionAttemptWithNullPrivateKeyPathShouldThrowArgumentNullException()
 		{
 			//setup
-			var keyFactory = new KeyFactory();
+			var keyFactory = new SymmetricKeyProvider();
 			var symmetricKey = keyFactory.Get(16);
 			var sut = new AESEncryption.AESEncryption();
 
@@ -99,7 +99,7 @@ namespace MCE2E.UnitTests
 		public void DecryptionAttemptWithMissingPrivateKeyPathShouldThrowFileNotFoundException()
 		{
 			//setup
-			var keyFactory = new KeyFactory();
+			var keyFactory = new SymmetricKeyProvider();
 			var symmetricKey = keyFactory.Get(16);
 			var sut = new AESEncryption.AESEncryption();
 

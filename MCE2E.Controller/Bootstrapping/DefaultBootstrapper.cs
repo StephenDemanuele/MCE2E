@@ -1,7 +1,8 @@
 ﻿using MCE2E.Contracts;
+using MCE2E.Controller.Services;
 using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Providers;
-using MCE2E.Controller.Services;
+using MCE2E.Controller.Providers.Ftp;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MCE2E.Controller.Bootstrapping
@@ -16,6 +17,7 @@ namespace MCE2E.Controller.Bootstrapping
 			serviceCollection.AddSingleton<IDecryptionService, DefaultDecryptionService>();
 			serviceCollection.AddSingleton<IStreamProvider, FileStreamProvider>();
 			serviceCollection.AddSingleton<IStreamProvider, FtpStreamProvider>();
+			serviceCollection.AddTransient((serviceProvider) => new FtpStreamConfigurationProvider());
 		}
 	}
 }

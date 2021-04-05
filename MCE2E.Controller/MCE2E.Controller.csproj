@@ -69,7 +69,9 @@
     <Compile Include="Contracts\IStreamProviderConfiguration.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="Providers\FileStreamProvider.cs" />
-    <Compile Include="Providers\FtpStreamProvider.cs" />
+    <Compile Include="Providers\Ftp\FtpStreamConfiguration.cs" />
+    <Compile Include="Providers\Ftp\FtpStreamConfigurationProvider.cs" />
+    <Compile Include="Providers\Ftp\FtpStreamProvider.cs" />
     <Compile Include="Providers\SymmetricKeyProvider.cs" />
     <Compile Include="Services\DefaultConfigurationService.cs" />
     <Compile Include="Services\DefaultDecryptionService.cs" />
