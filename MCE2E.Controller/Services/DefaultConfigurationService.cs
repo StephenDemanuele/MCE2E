@@ -6,7 +6,8 @@ namespace MCE2E.Controller.Services
 	{
 		public IConfiguration Get()
 		{
-			return new Configuration(@"C:\Users\Stephen.Demanuele\Desktop\sandbox\publickey.xml", 16);
+			//implement logic to load configuration from a source
+			return new Configuration(@"C:\Users\Stephen.Demanuele\Desktop\sandbox\publickey.xml", 32);
 		}
 	}
 }

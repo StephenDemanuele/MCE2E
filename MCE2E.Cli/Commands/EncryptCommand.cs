@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System.Linq;
-using System.Threading;
+﻿using System;
+using System.IO;
 using GoCommando;
+using System.Threading;
 using MCE2E.Controller;
 using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Exceptions;
@@ -23,13 +23,26 @@ namespace MCE2E.Cli.Commands
 
 		[Parameter("ext")]
 		[Description("The extension of files to encrypt.")]
-		public string TargetFileExtension { get ;set;}
+		public string TargetFileExtension { get; set; }
 
 		public override void Run()
 		{
 			Initialize();
-
+			var cancellationTokenSource = new CancellationTokenSource();
 			var encryptionService = ServiceProvider.GetService<IEncryptionService>();
+
+			encryptionService.OnProgressChanged += (sender, progress) =>
+			{
+				Log(progress.ToString(), LogLevel.Info);
+			};
+
+			Console.CancelKeyPress += (sender, args) =>
+			{
+				args.Cancel = true;
+				Log("Cancellation requested.", LogLevel.Warn);
+				cancellationTokenSource.Cancel();
+			};
+
 			try
 			{
 				var sourceDir = new DirectoryInfo(SourceDirectory);
@@ -39,28 +52,22 @@ namespace MCE2E.Cli.Commands
 					return;
 				}
 
-				var targetFiles = sourceDir.GetFiles(TargetFileExtension);
-				if (!targetFiles.Any())
-				{
-					Log("No files found", LogLevel.Warn);
-					return;
-				}
+				var sourceFiles = sourceDir.GetFiles(TargetFileExtension);
+				var task = encryptionService.EncryptAsync(sourceFiles, TargetDirectory, TargetType.File,
+					cancellationTokenSource.Token);
+				task.Wait();
+				var result = task.Result;
 
-				Log($"Found {targetFiles.Length} to encrypt.", LogLevel.Info);
-
-				foreach(var file in targetFiles)
-				{
-					Log($"Encrypting {file.Name}", LogLevel.Info);
-					// ReSharper disable once PossibleNullReferenceException
-					encryptionService.EncryptAsync(file, TargetDirectory, TargetType.File, CancellationToken.None).Wait();
-					Log("Ready", LogLevel.Info);
-				}
-
+				Log("Ready", LogLevel.Info);
 			}
 			catch (EncryptionServiceBootstrappingException encryptionServiceBootstrappingException)
 			{
 				Log("Error bootstrapping", LogLevel.Error);
 				Log(encryptionServiceBootstrappingException.InnerException.Message, LogLevel.Error);
+			}
+			catch (Exception ex)
+			{
+				Log(ex);
 			}
 		}
 	}

@@ -42,8 +42,16 @@ namespace MCE2E.Cli.Commands
 					break;
 			}
 
-			_consoleWriter.WriteLine(message);
+			_consoleWriter.WriteLine($"{DateTime.Now.ToString("hh:mm:ss tt")}:{message}");
+		}
 
+		protected void Log(Exception ex)
+		{
+			Log(ex.Message, LogLevel.Error);
+			if (ex.InnerException != null)
+			{
+				Log(ex.InnerException.Message, LogLevel.Error);
+			}
 		}
 	}
 

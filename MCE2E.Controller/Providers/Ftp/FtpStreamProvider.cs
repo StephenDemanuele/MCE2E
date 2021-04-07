@@ -32,5 +32,10 @@ namespace MCE2E.Controller.Providers.Ftp
 
 			return request.GetRequestStream();
 		}
+
+		public void CleanUp(string targetFilePath)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -7,5 +7,7 @@ namespace MCE2E.Controller.Contracts
 		TargetType Target { get; }
 
 		Stream Get(string targetFilePath);
+
+		void CleanUp(string targetFilePath);
 	}
 }

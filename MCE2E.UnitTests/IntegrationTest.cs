@@ -29,7 +29,7 @@ namespace MCE2E.UnitTests
 			{
 				throw new Exception($"File does not exist at {fileToEncryptPath}");
 			}
-			var fileToEncrypt = new FileInfo(fileToEncryptPath);
+			var filesToEncrypt = new FileInfo[] { new FileInfo(fileToEncryptPath) };
 
 			var privateKeyFilePath = @"C:\Users\Stephen.Demanuele\Desktop\sandbox\privatekey.xml";
 			if (!File.Exists(privateKeyFilePath))
@@ -46,15 +46,15 @@ namespace MCE2E.UnitTests
 			}
 
 			var encryptionService = _serviceProvider.GetService<IEncryptionService>();
-			encryptionService.EncryptAsync(fileToEncrypt, targetDirectoryPath, TargetType.File, CancellationToken.None).Wait();
+			encryptionService.EncryptAsync(filesToEncrypt, targetDirectoryPath, TargetType.File, CancellationToken.None).Wait();
 
 			var decryptionService = _serviceProvider.GetService<IDecryptionService>();
 			var decryptedFiles = decryptionService.Decrypt(targetDirectory, privateKeyFile);
 
 			decryptedFiles.Should().NotBeNullOrEmpty().And.Subject.Count().Should()
-			              .Be(1, "because only 1 file was encrypted");
+						  .Be(1, "because only 1 file was encrypted");
 
-			decryptedFiles[0].Name.Should().BeEquivalentTo(fileToEncrypt.Name);
+			decryptedFiles[0].Name.Should().BeEquivalentTo(filesToEncrypt[0].Name);
 		}
 	}
 }

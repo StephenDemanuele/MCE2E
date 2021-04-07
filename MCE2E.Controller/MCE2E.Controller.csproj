@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Humanizer, Version=2.8.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.Core.2.8.26\lib\netstandard2.0\Humanizer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -60,6 +63,7 @@
     <Compile Include="Bootstrapping\DefaultBootstrapper.cs" />
     <Compile Include="Bootstrapping\EncryptionServiceProviderBuilder.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Contracts\EncryptionResult.cs" />
     <Compile Include="Contracts\FtpStreamProviderConfiguration.cs" />
     <Compile Include="Contracts\IConfiguration.cs" />
     <Compile Include="Contracts\IConfigurationService.cs" />
@@ -67,6 +71,7 @@
     <Compile Include="Contracts\IEncryptionService.cs" />
     <Compile Include="Contracts\IStreamProvider.cs" />
     <Compile Include="Contracts\IStreamProviderConfiguration.cs" />
+    <Compile Include="Delegates.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="Providers\FileStreamProvider.cs" />
     <Compile Include="Providers\Ftp\FtpStreamConfiguration.cs" />

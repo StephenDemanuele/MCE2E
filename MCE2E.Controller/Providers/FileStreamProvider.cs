@@ -9,9 +9,15 @@ namespace MCE2E.Controller.Providers
 
 		public Stream Get(string targetFilePath)
 		{
-			var targetStream = new FileStream(targetFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+			var targetStream = new FileStream(targetFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
 			return targetStream;
+		}
+
+		public void CleanUp(string targetFilePath)
+		{
+			if (File.Exists(targetFilePath))
+				File.Delete(targetFilePath);
 		}
 	}
 }

@@ -6,6 +6,8 @@
 
         int SymmetricKeyLength { get; }
 
+        int ChunkSize { get; }
+
         string PathToOpenSsl { get; }
     }
 }
