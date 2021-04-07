@@ -4,7 +4,7 @@
     {
         string PathToPublicKey { get; }
 
-        int SymmetricKeyLength { get; }
+        uint SymmetricKeyLength { get; }
 
         int ChunkSize { get; }
 

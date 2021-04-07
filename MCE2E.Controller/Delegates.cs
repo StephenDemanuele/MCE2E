@@ -6,23 +6,24 @@
 		
 	public class EncryptionProgress
 	{
-		public EncryptionProgress(float overallProgress, FileEncryptionProgress fileEncryptionProgress)
+		public EncryptionProgress(int currentFile, int totalFiles, FileEncryptionProgress fileEncryptionProgress)
 		{
-			OverallProgress = overallProgress;
+			CurrentFile = currentFile;
+			TotalFiles = totalFiles;
 			CurrentFileProgress = fileEncryptionProgress.CurrentFileProgress;
 			Status = fileEncryptionProgress.Status;
 		}
 
-		public float OverallProgress { get; }
+		public int CurrentFile { get; }
+
+		public int TotalFiles { get; }
 
 		public float CurrentFileProgress { get; }
 
 		public string Status { get; }
 
-		public override string ToString()
-		{
-			return $"{OverallProgress.ToString("N1")}% - { CurrentFileProgress.ToString("N0")}% ({Status})";
-		}
+		public override string ToString() => $"File {CurrentFile} of {TotalFiles}    { CurrentFileProgress.ToString("N0")}% of ({Status})";
+
 	}
 
 	public class FileEncryptionProgress

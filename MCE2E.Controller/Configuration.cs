@@ -7,9 +7,9 @@ namespace MCE2E.Controller
 {
 	public class Configuration : IConfiguration
 	{
-		private readonly int[] _validKeyLengths = new int[] { 16, 24, 32 };
+		private readonly uint[] _validKeyLengths = new uint[] { 16, 24, 32 };
 
-		public Configuration(string pathToPublicKey, int symmetricKeyLength)
+		public Configuration(string pathToPublicKey, uint symmetricKeyLength)
 		{
 			if (!_validKeyLengths.Contains(symmetricKeyLength))
 			{
@@ -31,7 +31,7 @@ namespace MCE2E.Controller
 		/// <summary>
 		/// Valid values are 16, 24, 32
 		/// </summary>
-		public int SymmetricKeyLength { get; }
+		public uint SymmetricKeyLength { get; }
 
 		public int ChunkSize { get; } = 1 << 10;
 

@@ -3,6 +3,7 @@ using System.IO;
 using GoCommando;
 using System.Threading;
 using MCE2E.Controller;
+using System.Collections.Generic;
 using MCE2E.Controller.Contracts;
 using MCE2E.Controller.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,42 +32,57 @@ namespace MCE2E.Cli.Commands
 			var cancellationTokenSource = new CancellationTokenSource();
 			var encryptionService = ServiceProvider.GetService<IEncryptionService>();
 
-			encryptionService.OnProgressChanged += (sender, progress) =>
+			using (var fileProgress = new ConsoleProgressBar())
 			{
-				Log(progress.ToString(), LogLevel.Info);
-			};
-
-			Console.CancelKeyPress += (sender, args) =>
-			{
-				args.Cancel = true;
-				Log("Cancellation requested.", LogLevel.Warn);
-				cancellationTokenSource.Cancel();
-			};
-
-			try
-			{
-				var sourceDir = new DirectoryInfo(SourceDirectory);
-				if (!sourceDir.Exists)
+				encryptionService.OnProgressChanged += (sender, progress) =>
 				{
-					Log($"Source dir {SourceDirectory} does not exist", LogLevel.Error);
-					return;
+					Console.Title = progress.ToString();
+					fileProgress.Report(progress.CurrentFileProgress / 100);
+				};
+
+				Console.CancelKeyPress += (sender, args) =>
+				{
+					args.Cancel = true;
+					Log("Cancellation requested.", LogLevel.Warn);
+					cancellationTokenSource.Cancel();
+				};
+
+				try
+				{
+					var sourceDir = new DirectoryInfo(SourceDirectory);
+					if (!sourceDir.Exists)
+					{
+						Log($"Source dir {SourceDirectory} does not exist", LogLevel.Error);
+						return;
+					}
+
+					var sourceFiles = sourceDir.GetFiles(TargetFileExtension);
+					var task = encryptionService.EncryptAsync(sourceFiles, TargetDirectory, TargetType.File,
+						cancellationTokenSource.Token);
+					task.Wait();
+					var result = task.Result;
+					OutputResult(result);
+
+					Log("Ready", LogLevel.Info);
 				}
-
-				var sourceFiles = sourceDir.GetFiles(TargetFileExtension);
-				var task = encryptionService.EncryptAsync(sourceFiles, TargetDirectory, TargetType.File, cancellationTokenSource.Token);
-				task.Wait();
-				var result = task.Result;
-
-				Log("Ready", LogLevel.Info);
+				catch (EncryptionServiceBootstrappingException encryptionServiceBootstrappingException)
+				{
+					Log("Error occurred during bootstrapping", LogLevel.Error);
+					Log(encryptionServiceBootstrappingException);
+				}
+				catch (Exception ex)
+				{
+					Log(ex);
+				}
 			}
-			catch (EncryptionServiceBootstrappingException encryptionServiceBootstrappingException)
+		}
+
+		private void OutputResult(List<EncryptionResult> result)
+		{
+			foreach (var encryptionResult in result)
 			{
-				Log("Error occurred during bootstrapping", LogLevel.Error);
-				Log(encryptionServiceBootstrappingException);
-			}
-			catch (Exception ex)
-			{
-				Log(ex);
+				Console.WriteLine();
+				Log(encryptionResult.ToString(), LogLevel.Info);
 			}
 		}
 	}

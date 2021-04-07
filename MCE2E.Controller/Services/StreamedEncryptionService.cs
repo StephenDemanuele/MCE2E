@@ -17,7 +17,7 @@ namespace MCE2E.Controller.Services
 		private readonly IEncryptionAlgorithm _encryptionAlgorithm;
 		private readonly ISymmetricKeyProvider _keyFactory;
 		private readonly IStreamProvider[] _streamProviders;
-
+		private IStreamProvider _streamProvider;
 
 		public event OverallProgressReport OnProgressChanged;
 
@@ -37,56 +37,65 @@ namespace MCE2E.Controller.Services
 
 		public async Task<List<EncryptionResult>> EncryptAsync(
 			FileInfo[] sourceFiles,
-			string targetLocation, 
+			string targetLocation,
 			TargetType targetType,
 			CancellationToken cancellationToken)
-		{ 
+		{
+			ValidateArguments(sourceFiles, targetType, targetLocation);
 			var result = new List<EncryptionResult>();
-			
 			if (!sourceFiles.Any())
 			{
 				return result;
 			}
 
-			float fileIndex = 0;
+			_streamProvider = _streamProviders.First(x => x.Target == targetType);
+			var fileIndex = 0;
 			OnFileProgressChanged += (sender, currentFileProgress) =>
 			{
-				OnProgressChanged?.Invoke(this, new EncryptionProgress(
-					(fileIndex/sourceFiles.Length)*100, currentFileProgress));
+				OnProgressChanged?.Invoke(this, new EncryptionProgress(fileIndex+1, sourceFiles.Length, currentFileProgress));
 			};
-			foreach (var file in sourceFiles)
+
+			if (targetType == TargetType.File && !Directory.Exists(targetLocation))
 			{
-				var encryptionResult = await EncryptAsync(file, targetLocation, TargetType.File, cancellationToken);
-				result.Add(encryptionResult);
-				fileIndex++;
+				Directory.CreateDirectory(targetLocation);
 			}
 
-			OnProgressChanged?.Invoke(this, new EncryptionProgress(100, new FileEncryptionProgress(100, "Ready")));
+			for (;fileIndex<sourceFiles.Length;fileIndex++)
+			{
+				var file = sourceFiles[fileIndex];
+				if (cancellationToken.IsCancellationRequested)
+				{
+					CleanUpOnCancellation(result, sourceFiles.Length);
+					result.Clear();
+
+					return result;
+				}
+				var encryptionResult = await EncryptAsync(file, targetLocation, cancellationToken);
+				
+				if (encryptionResult != null) //can be null if cancellation was triggered when a file was being encrypted.
+				{
+					result.Add(encryptionResult);
+				}
+			}
+
+			OnProgressChanged?.Invoke(this, new EncryptionProgress(sourceFiles.Length, sourceFiles.Length, new FileEncryptionProgress(100, "Ready")));
 			return result;
 		}
 
 		private async Task<EncryptionResult> EncryptAsync(
 			FileInfo sourceFileToEncrypt,
 			string targetLocation,
-			TargetType targetType,
 			CancellationToken cancellationToken)
 		{
 			var stopwatch = new Stopwatch();
 			stopwatch.Start();
 
-			var streamProvider = _streamProviders.First(x => x.Target == targetType);
-
 			//add sanity checks on argument
 			var targetFilepath = Path.Combine(targetLocation, $"{sourceFileToEncrypt.Name}.enc");
 			var symmetricKey = _keyFactory.Get(_configuration.SymmetricKeyLength);
 
-			if (!Directory.Exists(targetLocation))
-			{
-				Directory.CreateDirectory(targetLocation);
-			}
-
 			var operationCompleted = true;
-			using (var targetStream = streamProvider.Get(targetFilepath))
+			using (var targetStream = _streamProvider.Get(targetFilepath))
 			{
 				var cryptoTransform = _encryptionAlgorithm.InitializeEncryption(symmetricKey, targetStream);
 				using (var cryptoStream = new CryptoStream(targetStream, cryptoTransform, CryptoStreamMode.Write))
@@ -108,7 +117,7 @@ namespace MCE2E.Controller.Services
 								}
 
 								await cryptoStreamWriter.WriteAsync(buffer, 0, bytesRead);
-								OnFileProgressChanged?.Invoke(this, 
+								OnFileProgressChanged?.Invoke(this,
 									new FileEncryptionProgress((chunkIndex / chunksCount) * 100, sourceFileToEncrypt.Name));
 
 								chunkIndex++;
@@ -134,10 +143,61 @@ namespace MCE2E.Controller.Services
 			}
 
 			//cleanup after operation cancellation
-			streamProvider.CleanUp(targetFilepath);
+			_streamProvider.CleanUp(targetFilepath);
 			stopwatch.Stop();
 
 			return null;
+		}
+
+		private void ValidateArguments(FileInfo[] sourceFiles, TargetType targetType, string targetLocation)
+		{
+			if (sourceFiles == null)
+			{
+				throw new ArgumentNullException(nameof(sourceFiles));
+			}
+
+			if (targetType == TargetType.NotSet)
+			{
+				throw new ArgumentException(nameof(targetType));
+			}
+
+			if (string.IsNullOrEmpty(targetLocation))
+			{
+				throw new ArgumentNullException(nameof(targetLocation));
+			}
+
+			if (targetType == TargetType.File && !Path.IsPathRooted(targetLocation))
+			{
+				throw new ArgumentException($"Target location must be a rooted path when target type is File",
+					nameof(targetLocation));
+			}
+
+			if (_streamProviders.All(x => x.Target != targetType))
+			{
+				throw new InvalidOperationException(
+					$"No stream providers can be found for {nameof(targetType)}:{targetType}");
+			}
+		}
+
+		private void CleanUpOnCancellation(List<EncryptionResult> encryptedFiles, int countOfSourceFilesToEncrypt)
+		{
+			if (!encryptedFiles.Any())
+			{
+				return;
+			}
+
+			var deletedFileCount = 0;
+			foreach (var encryptedFile in encryptedFiles)
+			{
+				_streamProvider.CleanUp(encryptedFile.EncryptedFilePath);
+				_streamProvider.CleanUp(encryptedFile.KeyFilePath);
+				deletedFileCount++;
+
+				//var progress = ((float)(encryptedFiles.Count - deletedFileCount) / countOfSourceFilesToEncrypt) * 100;
+				OnProgressChanged?.Invoke(this,
+					new EncryptionProgress((encryptedFiles.Count - deletedFileCount), countOfSourceFilesToEncrypt,
+						new FileEncryptionProgress(100, $"Deleted {encryptedFile.EncryptedFilePath}")));
+			}
 		}
 	}
 }

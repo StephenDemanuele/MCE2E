@@ -13,6 +13,7 @@ using MCE2E.Controller;
 
 namespace MCE2E.UnitTests
 {
+	[Collection("SequentialExecution")]
 	public class IntegrationTest
 	{
 		private readonly IServiceProvider _serviceProvider;
@@ -36,7 +37,6 @@ namespace MCE2E.UnitTests
 			{
 				throw new Exception($"File does not exist at {privateKeyFilePath}");
 			}
-			var privateKeyFile = new FileInfo(privateKeyFilePath);
 
 			var targetDirectoryPath = Path.Combine(Environment.CurrentDirectory, "Encrypted");
 			var targetDirectory = new DirectoryInfo(targetDirectoryPath);
@@ -49,7 +49,7 @@ namespace MCE2E.UnitTests
 			encryptionService.EncryptAsync(filesToEncrypt, targetDirectoryPath, TargetType.File, CancellationToken.None).Wait();
 
 			var decryptionService = _serviceProvider.GetService<IDecryptionService>();
-			var decryptedFiles = decryptionService.Decrypt(targetDirectory, privateKeyFile);
+			var decryptedFiles = decryptionService.Decrypt(targetDirectory, new FileInfo(privateKeyFilePath));
 
 			decryptedFiles.Should().NotBeNullOrEmpty().And.Subject.Count().Should()
 						  .Be(1, "because only 1 file was encrypted");

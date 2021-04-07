@@ -82,7 +82,7 @@ namespace MCE2E.UnitTests
 		}
 
 		[Fact]
-		public void Cleaup_WhenNullFilePath_ShouldThrowArgumentNullException()
+		public void CleanUp_WhenNullFilePath_ShouldThrowArgumentNullException()
 		{
 			//setup
 			var fileStreamProvider = new FileStreamProvider();

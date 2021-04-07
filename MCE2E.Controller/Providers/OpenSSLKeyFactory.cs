@@ -16,7 +16,7 @@ namespace MCE2E.Controller.Factories
 			_configuration = configuration;
 		}
 
-		public byte[] Get(int keyLength)
+		public byte[] Get(uint keyLength)
 		{
 			if (!File.Exists(_configuration.PathToOpenSsl))
 			{

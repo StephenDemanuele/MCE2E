@@ -2,6 +2,6 @@
 {
 	public interface ISymmetricKeyProvider
 	{
-		byte[] Get(int keyLength);
+		byte[] Get(uint keyLength);
 	}
 }
