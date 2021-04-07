@@ -132,6 +132,7 @@ namespace MCE2E.Controller.Services
 				stopwatch.Stop();
 				return new EncryptionResult(targetFilepath, encryptedSymmetricKeyFilepath, stopwatch.Elapsed);
 			}
+
 			//cleanup after operation cancellation
 			streamProvider.CleanUp(targetFilepath);
 			stopwatch.Stop();

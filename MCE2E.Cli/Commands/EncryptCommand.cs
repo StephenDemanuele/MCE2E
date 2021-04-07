@@ -53,8 +53,7 @@ namespace MCE2E.Cli.Commands
 				}
 
 				var sourceFiles = sourceDir.GetFiles(TargetFileExtension);
-				var task = encryptionService.EncryptAsync(sourceFiles, TargetDirectory, TargetType.File,
-					cancellationTokenSource.Token);
+				var task = encryptionService.EncryptAsync(sourceFiles, TargetDirectory, TargetType.File, cancellationTokenSource.Token);
 				task.Wait();
 				var result = task.Result;
 
@@ -62,8 +61,8 @@ namespace MCE2E.Cli.Commands
 			}
 			catch (EncryptionServiceBootstrappingException encryptionServiceBootstrappingException)
 			{
-				Log("Error bootstrapping", LogLevel.Error);
-				Log(encryptionServiceBootstrappingException.InnerException.Message, LogLevel.Error);
+				Log("Error occurred during bootstrapping", LogLevel.Error);
+				Log(encryptionServiceBootstrappingException);
 			}
 			catch (Exception ex)
 			{
