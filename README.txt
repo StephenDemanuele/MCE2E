@@ -1,6 +1,6 @@
 Overview.
 
-This is a prototype/proof-of-concept implementation of the end-to-end encryption feature, targeting requirements discussed internally.
+This is a prototype/proof-of-concept implementation of the end-to-end encryption feature.
 * employs combination of symmetric and asymmetric key encryption
 * creates a pair [encrypted file - encrypted key] for each subject file
 * plugin architecture
